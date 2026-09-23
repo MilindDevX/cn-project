@@ -1,0 +1,11 @@
+HTTP/1.1 200 OK
+X-Backend: A
+Cache-Control: max-age=60
+ETag: "backend-a-cache-v1"
+Content-Type: text/plain; charset=utf-8
+Date: Wed, 23 Sep 2026 13:25:51 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Content-Length: 30
+
+Cached response from Backend A
