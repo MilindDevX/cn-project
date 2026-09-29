@@ -1,4 +1,4 @@
-# CN project — Milind's half
+# CN project — Team 18
 
 Backend A runs on `0.0.0.0:3001` with Node.js. No packages required.
 
@@ -16,4 +16,9 @@ node --test backend-a.test.js
 
 Every response includes `X-Backend: A`.
 
-See [DNS setup](docs/dns.md) and [evidence index](evidence/README.md). Backend B runs on Aarohi Mac at port 3002. The [Caddyfile](proxy/Caddyfile) balances A and B over HTTPS; certificate files remain on Aarohi Mac.
+See [DNS setup](docs/dns.md), [evidence](evidence/README.md), and Aarohi's
+[HTTPS proxy notes](docs/proxy.md). The DNS record points `app.team18.test` to
+Aarohi's Mac. Both Macs use a domain-specific resolver, leaving ordinary Wi-Fi
+DNS automatic. The evidence includes DNS and TLS captures, browser headers,
+A/B balancing, cache revalidation, and failure tests. Recheck the Macs' current
+LAN addresses and the live balance before the demo.
