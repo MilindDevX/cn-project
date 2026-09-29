@@ -1,31 +1,56 @@
 # HTTPS proxy and Backend B
 
-## Live recheck, 2026-09-29
+## Configuration
 
-The original `~/team18-proxy/Caddyfile` is running on Aarohi's Mac. Both
-backends answer directly. Trusted HTTPS, DNS, and cache revalidation work.
-During diagnosis, eight HTTPS requests reached only B; Caddy logged
-`dial tcp 10.7.20.246:3001: connect: no route to host` even while Aarohi's
-`curl` reached A directly. After the original Caddy listener was restored,
-12 consecutive HTTPS requests alternated B/A. This intermittent route needs
-another check before the demo. Temporary diagnostic listeners were stopped,
-and Backend A's temporary request logging was removed.
+[Backend B](../backend-b.js) listens on `0.0.0.0:3002`. It serves `/`,
+`/api/status`, and `/api/cache`, identifies itself with `X-Backend: B`, and
+supports ETag revalidation. Its [tests](../backend-b.test.js) run with
+`node --test backend-b.test.js`.
 
+Aarohi's [Caddyfile](../proxy/Caddyfile) serves `app.team18.test` on HTTPS port
+443. It forwards to Backend A at `10.7.20.246:3001` and Backend B at
+`127.0.0.1:3002`, rotates requests with `round_robin`, checks `/api/status`
+every two seconds, and retries failed upstream connections for up to two
+seconds. TLS protects the client-to-Caddy connection; Caddy-to-backend HTTP is
+unencrypted. The certificate and private key paths are in the Caddyfile. Their
+contents remain on Aarohi's Mac.
 
-On Aarohi's Mac (`10.7.23.42` during the 2026-09-29 test), Caddy 2.11.4 listens on port 443 with the `app.team18.test` certificate. It forwards requests over plain HTTP to Backend A on Milind's Mac (`10.7.20.246:3001`) and Backend B on Aarohi's Mac (`127.0.0.1:3002`). The TLS handshake and encrypted application data are on the client-to-Caddy connection; backend HTTP is not encrypted.
+On 2026-09-29, the deployed Caddyfile and Backend B source in
+`~/team18-proxy` on Aarohi's Mac matched the committed files. Her Caddy
+version was 2.11.4. The project uses writable Caddy storage paths because
+the default storage directory on her Mac was root-owned.
 
-The [Caddyfile](../proxy/Caddyfile) uses `round_robin`, checks `/api/status` every 2 seconds, and retries failed upstream connections for up to 2 seconds. These directives follow [Caddy's reverse proxy documentation](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy). The deployed copy is `~/team18-proxy/Caddyfile` on Aarohi's Mac; `Caddyfile.before-balancing` preserves her original A-only config. The certificate and private key remain only on her Mac.
+## Start and check before the demo
 
-Backend B is [implemented](../backend-b.js) and [tested](../backend-b.test.js) in this repo. The same files were copied to `~/team18-proxy` on Aarohi's Mac. It listens on `0.0.0.0:3002`, identifies itself in `X-Backend: B`, and serves `/`, `/api/status`, and `/api/cache` with ETag revalidation.
+Connect both Macs to the same LAN. Check their current IP addresses against
+the Caddyfile and [DNS configuration](dns.md); the recorded addresses are
+DHCP assignments. Check whether ports 3001 on Milind's Mac and 3002 and
+443 on Aarohi's Mac are already listening. Start only missing services:
+Backend A with `node backend-a.js` from Milind's repo, and Backend B with
+`node backend-b.js` from `~/team18-proxy` on Aarohi's Mac. If Caddy is not
+listening, run this in another Terminal on her Mac:
 
-The 2026-09-29 results, all captured from Milind's Mac, are indexed in [the evidence folder](../evidence/README.md):
+```sh
+cd ~/team18-proxy
+XDG_DATA_HOME="$HOME/.local/share/team18-caddy" XDG_CONFIG_HOME="$HOME/.config/team18-caddy" caddy start --config Caddyfile --adapter caddyfile
+```
 
-| Test | Result |
-| --- | --- |
-| Eight HTTPS status requests | A, B, A, B, A, B, A, B |
-| Backend A stopped | Four `200` responses from B |
-| Both backends stopped | Caddy returned `503` |
-| Both restored | Follow-up requests alternated A/B |
-| Cache request with B's ETag | B returned `304`; A returned its own `200` representation and ETag |
+Check both backends directly, then run
+`curl -i https://app.team18.test/api/status` repeatedly from both Macs.
+Verify the certificate is trusted and `X-Backend` alternates A/B. See the
+[evidence index](../evidence/README.md) for DNS, TCP, TLS, browser, cache, and
+failure captures from Milind's Mac.
 
-The A/B and failure captures used curl's `--resolve` to isolate proxy behavior while dnsmasq was stopped. After dnsmasq restarted, requests without `--resolve` succeeded from both Macs over trusted HTTPS. Caddy was started with `XDG_DATA_HOME` and `XDG_CONFIG_HOME` pointing to writable user-owned paths because the default Caddy storage directory on Aarohi's Mac is root-owned. Its config autosave and storage cleanup then succeeded.
+## Recorded results and risk
+
+On 2026-09-29, trusted HTTPS, A/B balancing, cache `200` and conditional
+`304`, A-down B-only `200`, and both-down `503` passed. After both backends
+were restored, 12 requests spaced five seconds apart alternated A/B. The
+[live recheck](../evidence/local/live-recheck-2026-09-29.txt) records these
+results.
+
+Earlier that day, Caddy temporarily sent every request to B and logged
+`dial tcp 10.7.20.246:3001: connect: no route to host` even while `curl` on
+Aarohi's Mac reached A directly. Restarting with the original Caddyfile
+restored balancing. The cause was not established. Recheck routing before
+the demo, especially after either Mac changes networks or restarts.
