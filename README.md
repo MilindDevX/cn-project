@@ -16,4 +16,4 @@ node --test backend-a.test.js
 
 Every response includes `X-Backend: A`.
 
-See [DNS setup](docs/dns.md) and [evidence index](evidence/README.md). The team hostname is `app.team18.test`. The DNS record, CA trust, TLS evidence, and shared failure tests still need Aarohi's Mac IP, certificate, and working proxy.
+See [DNS setup](docs/dns.md) and [evidence index](evidence/README.md). Backend B runs on Aarohi Mac at port 3002. The [Caddyfile](proxy/Caddyfile) balances A and B over HTTPS; certificate files remain on Aarohi Mac.

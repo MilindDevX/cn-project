@@ -1,0 +1,10 @@
+app.team18.test {
+	tls /Users/ishatomar/team18-proxy/app.team18.test.pem /Users/ishatomar/team18-proxy/app.team18.test-key.pem
+
+	reverse_proxy 10.7.20.246:3001 127.0.0.1:3002 {
+		lb_policy round_robin
+		lb_try_duration 2s
+		health_uri /api/status
+		health_interval 2s
+	}
+}
