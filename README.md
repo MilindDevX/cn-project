@@ -18,7 +18,7 @@ Every response includes `X-Backend: A`.
 
 See the [DNS setup](docs/dns.md), [evidence](evidence/README.md), and
 [HTTPS proxy notes](docs/proxy.md). The DNS record maps `app.team18.test` to
-Aarohi's Mac. During the 2026-09-29 integration test, both Macs used scoped
+Isha's Mac. During the 2026-09-29 integration test, both Macs used scoped
 resolvers for the project domain while Wi-Fi DNS stayed automatic. The
 evidence covers DNS and TLS captures, browser headers, balancing, caching,
 and failure tests. Recheck LAN addresses and balancing before the demo.

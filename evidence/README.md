@@ -26,26 +26,26 @@ checked again before the demo.
 | `local/backend-a.pcapng` | Wireshark capture on `lo0`: TCP SYN, SYN-ACK, GET `/api/status`, HTTP 200 |
 | `local/pcap-summary.tsv` | Packet numbers and flags extracted from that capture |
 | `local/wrong-port.txt` | Connection refused on unused port 3002; curl exit 7 |
-| `local/dns-test-1053.txt` | Initial local UDP DNS test returned Aarohi's `10.7.23.42` on temporary port 1053, before the port-53 and second-Mac tests |
+| `local/dns-test-1053.txt` | Initial local UDP DNS test returned Isha's `10.7.23.42` on temporary port 1053, before the port-53 and second-Mac tests |
 | `local/dns-team18-query.pcapng` | Wireshark capture of the temporary-port DNS query and A-record response on `lo0` |
-| `local/dns-port53-direct.txt` | Direct query to dnsmasq on port 53 returned Aarohi's IP |
-| `local/dns-port53-nslookup.txt` | Second DNS client returned Aarohi's IP |
-| `local/dns-port53-system.txt` | Normal Wi-Fi DNS resolution returned Aarohi's IP |
-| `local/dns-macos-resolver.txt` | macOS system resolver returned Aarohi's IP |
+| `local/dns-port53-direct.txt` | Direct query to dnsmasq on port 53 returned Isha's IP |
+| `local/dns-port53-nslookup.txt` | Second DNS client returned Isha's IP |
+| `local/dns-port53-system.txt` | Normal Wi-Fi DNS resolution returned Isha's IP |
+| `local/dns-macos-resolver.txt` | macOS system resolver returned Isha's IP |
 | `local/dns-wifi-setting.txt` | This Mac's Wi-Fi DNS server was `10.7.20.246` during the 2026-09-24 test; this setting has since been removed |
-| `local/dns-aarohi-port53.pcapng` | Wireshark capture on `en0`: Aarohi's DNS query and matching A-record response |
-| `local/dns-aarohi-summary.tsv` | Source, destination, and response value extracted from that capture |
-| `local/dns-aarohi-system-app.pcapng` | Filtered Wireshark capture of Aarohi's later team-name query and response |
+| `local/dns-isha-port53.pcapng` | Wireshark capture on `en0`: Isha's DNS query and matching A-record response |
+| `local/dns-isha-summary.tsv` | Source, destination, and response value extracted from that capture |
+| `local/dns-isha-system-app.pcapng` | Filtered Wireshark capture of Isha's later team-name query and response |
 | `local/ca-trust.txt` | Verified public CA fingerprint and this Mac's SSL trust setting |
 | `local/https-status.txt` | Successful TLS 1.3/HTTP/2 request, certificate verification, and Backend A status through Caddy |
 | `local/https-cache-200.txt` | HTTPS cache response with `Cache-Control: max-age=60` and ETag |
 | `local/https-cache-304.txt` | HTTPS conditional request with matching ETag returned `304` |
 | `local/tls-proxy-a.pcapng` | Filtered Wireshark capture on `en0` of three HTTPS requests: TCP handshakes, TLS handshakes, and encrypted traffic |
-| `local/dns-retest-team.txt` | After the forwarding fix, port-53 team-name lookup returned Aarohi's IP |
+| `local/dns-retest-team.txt` | After the forwarding fix, port-53 team-name lookup returned Isha's IP |
 | `local/dns-retest-public.txt` | After the forwarding fix, port-53 public-name lookup succeeded |
 | `local/dns-retest-wrong-name.txt` | Unknown team name returned `NXDOMAIN` |
-| `local/dns-aarohi-retest.pcapng` | Four Wireshark packets on `en0`: Aarohi's team/public DNS queries and replies after the forwarding fix |
-| `local/dns-aarohi-retest-summary.tsv` | Packet-level names, addresses, and A-record answers from the retest capture |
+| `local/dns-isha-retest.pcapng` | Four Wireshark packets on `en0`: Isha's team/public DNS queries and replies after the forwarding fix |
+| `local/dns-isha-retest-summary.tsv` | Packet-level names, addresses, and A-record answers from the retest capture |
 | `local/https-system-dns-status.txt` | Successful curl request through normal macOS DNS and certificate trust, without `--resolve` |
 | `local/browser-certificate-valid.jpg` | Chrome shows `Connection is secure` and `Certificate is valid` |
 | `local/browser-status-headers.jpg` | Chrome DevTools shows HTTPS `200`, Caddy, and `X-Backend: A` |
@@ -60,13 +60,13 @@ checked again before the demo.
 | `local/https-both-down.txt` | With A and B stopped, Caddy returned `503` |
 | `local/https-balanced-cache-200.txt` | Cacheable HTTPS `200` with Backend B's ETag |
 | `local/https-balanced-cache-conditional.txt` | Conditional HTTPS requests with B's ETag: B returned `304`; A returned `200` with its own representation and ETag |
-| `local/dns-aarohi-nslookup.txt` | Aarohi's Mac queried Milind's port-53 DNS server and received `10.7.23.42` |
+| `local/dns-isha-nslookup.txt` | Isha's Mac queried Milind's port-53 DNS server and received `10.7.23.42` |
 | `local/https-normal-dns-balancing.txt` | Normal macOS DNS and trusted HTTPS reached Backend B without `--resolve` after dnsmasq restarted |
-| `local/dns-aarohi-scoped.txt` | Aarohi's macOS scoped resolver uses Milind's DNS and normal host resolution returns `10.7.23.42` |
-| `local/https-aarohi-normal-dns.txt` | Aarohi's normal HTTPS request reached Backend A without `--resolve` or `-k` |
+| `local/dns-isha-scoped.txt` | Isha's macOS scoped resolver uses Milind's DNS and normal host resolution returns `10.7.23.42` |
+| `local/https-isha-normal-dns.txt` | Isha's normal HTTPS request reached Backend A without `--resolve` or `-k` |
 
 The Backend A loopback TCP capture is plain HTTP, so it is **not** TLS or encrypted-traffic evidence. DNS and HTTPS on `en0`, plus Chrome security and DevTools screenshots, are captured above.
 
 The DNS retest captures show dnsmasq responding on port 53 after the forwarding fix. Milind's manual Wi-Fi DNS setting remains removed after an earlier internet-access issue. A domain-specific macOS resolver routes `team18.test` to dnsmasq; `https-system-dns-status.txt` and the Chrome screenshots demonstrate normal system resolution. The earlier HTTPS capture used curl's `--resolve` option to isolate TLS testing before that resolver existed.
 
-The 2026-09-29 A/B and failure captures used `--resolve` while dnsmasq was stopped. After restarting dnsmasq, both Macs used scoped resolvers for `team18.test`; `https-normal-dns-balancing.txt` and `https-aarohi-normal-dns.txt` show normal trusted HTTPS without `--resolve`. The earlier two-Mac `dig` and DNS packet captures are listed above.
+The 2026-09-29 A/B and failure captures used `--resolve` while dnsmasq was stopped. After restarting dnsmasq, both Macs used scoped resolvers for `team18.test`; `https-normal-dns-balancing.txt` and `https-isha-normal-dns.txt` show normal trusted HTTPS without `--resolve`. The earlier two-Mac `dig` and DNS packet captures are listed above.

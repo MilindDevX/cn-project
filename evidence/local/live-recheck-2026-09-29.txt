@@ -2,7 +2,7 @@ Team 18 live recheck — 2026-09-29 IST
 
 DNS
 - Milind's macOS resolver: app.team18.test -> 10.7.23.42.
-- Milind and Aarohi queried 10.7.20.246:53: app.team18.test -> 10.7.23.42; example.com returned public A records.
+- Milind and Isha queried 10.7.20.246:53: app.team18.test -> 10.7.23.42; example.com returned public A records.
 - Unknown name not-app.team18.test returned NXDOMAIN.
 
 HTTPS and backends
@@ -24,7 +24,7 @@ Caching
 
 Earlier in this same diagnostic session, Caddy temporarily routed only to B and logged
 "dial tcp 10.7.20.246:3001: connect: no route to host" even while curl from
-Aarohi's Mac reached A. The original Caddyfile is restored and balancing passed
+Isha's Mac reached A. The original Caddyfile is restored and balancing passed
 afterward. Recheck stability before the demo. The packet captures and browser
 screenshots indexed in evidence/README.md were collected earlier.
 
