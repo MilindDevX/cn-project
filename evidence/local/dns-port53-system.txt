@@ -1,0 +1,20 @@
+
+; <<>> DiG 9.10.6 <<>> +time=2 +tries=1 app.team18.test A
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 17219
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;app.team18.test.		IN	A
+
+;; ANSWER SECTION:
+app.team18.test.	0	IN	A	10.7.23.42
+
+;; Query time: 4 msec
+;; SERVER: 10.7.20.246#53(10.7.20.246)
+;; WHEN: Thu Sep 24 13:50:18 IST 2026
+;; MSG SIZE  rcvd: 60
+

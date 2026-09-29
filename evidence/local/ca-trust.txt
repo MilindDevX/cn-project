@@ -1,0 +1,9 @@
+2026-09-24: Aarohi's public rootCA.cer was checked with OpenSSL before installation.
+Subject and issuer: mkcert development CA, ishatomar@Ishas-MacBook-Pro.local (Isha Tomar)
+Basic Constraints: CA:TRUE, pathlen:0
+SHA-256 fingerprint: F7:06:67:00:02:29:07:3C:BF:4C:F6:38:9E:DD:60:14:9F:D0:C4:32:99:18:D4:AE:29:4D:1D:D7:14:B0:AC:67
+Fingerprint matches the value supplied by Aarohi.
+Installed in Milind's login keychain as a trusted root for SSL only.
+security dump-trust-settings: one trusted certificate, with Policy OID SSL.
+Initial HTTPS check to app.team18.test:443 at 10.7.23.42 was refused before Aarohi started Caddy.
+After Caddy started, curl verified the certificate and TLS 1.3 connection; see https-status.txt and tls-proxy-a.pcapng.

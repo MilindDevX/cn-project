@@ -17,29 +17,38 @@ Source: `ifconfig en0` and `netstat -rn -f inet` on this Mac. Record fresh value
 
 ## DNS server
 
-Homebrew `dnsmasq 2.93` is installed. Configuration and service startup await Aarohi's Mac IPv4 address. The team 18 A record is `app.team18.test` → Aarohi's LAN IPv4.
+Homebrew `dnsmasq 2.93` is installed. [`dnsmasq/team18.conf`](../dnsmasq/team18.conf) maps `app.team18.test` to Aarohi's `10.7.23.42`, binding this Mac's `127.0.0.1` and `10.7.20.246`. The same config is installed at `/opt/homebrew/etc/dnsmasq.d/team18.conf`. During the 2026-09-24 test, direct `dig`, `nslookup`, and normal macOS resolution on both Macs returned the intended A record. A Wireshark capture on Milind's `en0` shows Aarohi's query and the response. On 2026-09-29, dnsmasq was serving port 53 and its syntax check passed, although `brew services list` reported `none` and no matching launch service was found; automatic restart after reboot is unverified.
 
-When Aarohi's IP is known:
+Milind reported losing internet access while using this Mac for Wi-Fi DNS, then stopped dnsmasq and restored automatic DNS. A controlled test showed the earlier config could not forward public names when its resolver file pointed back to this Mac. The current config uses `no-resolv` with the verified upstream `8.8.8.8`; a port-1053 test resolved both `www.example.org` and `app.team18.test` under that same condition. The original outage's exact sequence was not captured. On 2026-09-24, dnsmasq was restarted on port 53. Both Macs resolved `app.team18.test` to `10.7.23.42` and `example.com` to public addresses through `10.7.20.246`; a fresh Wireshark capture on Milind's `en0` contains both queries from Aarohi and their responses. Milind's `/etc/resolver/team18.test` routes only the project domain to `10.7.20.246`; Wi-Fi DNS remains automatic for other names. macOS host resolution, ordinary curl to the project hostname, Chrome, and public HTTPS were verified after this change. On 2026-09-29, Milind restarted dnsmasq; direct team and public queries succeeded from both Macs, Aarohi's `nslookup` returned the team IP, and ordinary HTTPS on Milind's Mac reached Backend B without `--resolve`.
 
-1. Configure dnsmasq to answer the exact hostname with Aarohi's IP and listen on this Mac's reachable LAN address on UDP/TCP port 53. Leave upstream DNS forwarding enabled for other names.
-2. Set both Macs' Wi-Fi DNS server to this Mac's current LAN IP. Confirm that firewall and Wi-Fi client isolation permit UDP/TCP 53 from Aarohi's Mac.
-3. Check `dig @<this-Mac-IP> app.team18.test A` on both Macs. Check `nslookup app.team18.test <this-Mac-IP>` as a second client. The answer must be Aarohi's current IP. Save command output and a Wireshark DNS query/response capture.
-4. Check normal resolution without `@server` on both Macs. This proves the OS DNS setting is actually used. Use `dig`/`nslookup` with explicit server only to prove dnsmasq itself works.
+The domain-specific resolver file contains:
+
+```text
+nameserver 10.7.20.246
+```
+
+On 2026-09-29, Aarohi installed the same `/etc/resolver/team18.test` setting while keeping Wi-Fi DNS automatic. Her `scutil --dns` showed `10.7.20.246` for `team18.test`, normal macOS host resolution returned `10.7.23.42`, and curl reached Backend A over trusted HTTPS without `--resolve`. Her direct `dig` and `nslookup` also queried Milind's DNS server successfully.
+
+Before each demo:
+
+1. Before the demo, recheck both Macs' DHCP addresses against the config file.
+2. If dnsmasq is stopped, start it on Milind's Mac with `sudo /opt/homebrew/bin/brew services start dnsmasq`; enter the administrator password only in the Mac's Terminal. Verify an uncached public name and `app.team18.test` through `dig @10.7.20.246` before changing either Mac's Wi-Fi DNS setting.
+3. Repeat `nslookup app.team18.test 10.7.20.246` from Aarohi's Mac; the 2026-09-29 output is saved in `evidence/local/dns-aarohi-nslookup.txt`. Keep Milind's Wi-Fi DNS automatic. The domain-specific resolver already routes browser requests for `team18.test` to dnsmasq without changing public-name DNS.
 
 Do not put this hostname in `/etc/hosts`; it would bypass the DNS query this project must demonstrate. Recheck LAN IPs after reconnecting to Wi-Fi.
 
 ## CA and HTTPS
 
-Obtain the CA certificate and its SHA-256 fingerprint directly from Aarohi. Verify the fingerprint before adding that CA to macOS trust. Record `curl -v https://app.team18.test/` without `-k`, plus browser security details and a TLS capture. The TLS handshake and encrypted application data are between client and Aarohi's HTTPS proxy; Backend A receives HTTP on port 3001.
+Aarohi's public mkcert CA matched the supplied SHA-256 fingerprint and is trusted for SSL in Milind's login keychain. On 2026-09-24, curl connected to Aarohi's Caddy proxy both with `--resolve app.team18.test:443:10.7.23.42` and later through normal macOS domain resolution. It verified the certificate for `app.team18.test` without `-k`, negotiated TLS 1.3 and HTTP/2, and received Backend A's `200` status response. The Wireshark capture shows the TCP handshake, TLS ClientHello and ServerHello, and encrypted application records. Chrome showed a secure connection and DevTools recorded Backend A headers, a cacheable `200`, and an `If-None-Match` reload returning `304`. The TLS connection is between Milind's Mac and Aarohi's proxy; Backend A receives HTTP on port 3001.
 
 ## Failure cases
 
 | Case | Action | Evidence to save |
 | --- | --- | --- |
 | Wrong DNS name | Query a different `.test` name | NXDOMAIN or nonmatching answer; preserve resolver output |
-| Wrong DNS IP | Temporarily set the test hostname's A record to an unused LAN IP | DNS returns the wrong IP, then HTTPS fails; restore the correct record immediately |
-| One backend down | Stop A or B while proxy stays up | Proxy response/status and remaining backend identity |
-| Both down | Stop both backends while proxy stays up | Proxy error/status and timestamp |
-| Wrong port | Point a test request or proxy upstream to an unused port | Connection failure or proxy error; local request example in `evidence/local/wrong-port.txt` |
+| Wrong DNS IP | Run an isolated dnsmasq on port 1053 with `app.team18.test` mapped to `127.0.0.1`; make one HTTPS request using that test answer | The test server returned `127.0.0.1` and local HTTPS port 443 refused the connection; live port-53 DNS stayed correct |
+| One backend down | Stop A while proxy stays up | Four HTTPS requests returned `200`, `X-Backend: B`; `evidence/local/https-a-down.txt` |
+| Both down | Stop A and B while proxy stays up | HTTPS returned `503`; `evidence/local/https-both-down.txt` |
+| Wrong port | Request the proxy on unused port 8443 | Curl connection refusal and Wireshark SYN followed by RST/ACK; local backend request example also in `evidence/local/wrong-port.txt` |
 
-Run shared cases only after the proxy and both backends are connected. Record expected behavior from the proxy configuration before judging results.
+Both backends were restored after the 2026-09-29 tests; four follow-up requests alternated A/B. The recorded HTTPS failure tests used curl's `--resolve` to isolate proxy behavior from DNS, which was stopped at the time. Dnsmasq was then restarted and an ordinary HTTPS request succeeded without `--resolve`. Recheck both Macs' LAN addresses before the demo.

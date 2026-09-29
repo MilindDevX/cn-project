@@ -1,0 +1,6 @@
+Server:		10.7.20.246
+Address:	10.7.20.246#53
+
+Name:	app.team18.test
+Address: 10.7.23.42
+

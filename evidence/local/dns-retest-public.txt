@@ -1,0 +1,22 @@
+
+; <<>> DiG 9.10.6 <<>> @10.7.20.246 example.com A +time=2 +tries=1
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 47873
+;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;example.com.			IN	A
+
+;; ANSWER SECTION:
+example.com.		200	IN	A	104.20.23.154
+example.com.		200	IN	A	172.66.147.243
+
+;; Query time: 2 msec
+;; SERVER: 10.7.20.246#53(10.7.20.246)
+;; WHEN: Thu Sep 24 15:15:43 IST 2026
+;; MSG SIZE  rcvd: 72
+
