@@ -16,9 +16,9 @@ node --test backend-a.test.js
 
 Every response includes `X-Backend: A`.
 
-See [DNS setup](docs/dns.md), [evidence](evidence/README.md), and Aarohi's
-[HTTPS proxy notes](docs/proxy.md). The DNS record points `app.team18.test` to
-Aarohi's Mac. Both Macs use a domain-specific resolver, leaving ordinary Wi-Fi
-DNS automatic. The evidence includes DNS and TLS captures, browser headers,
-A/B balancing, cache revalidation, and failure tests. Recheck the Macs' current
-LAN addresses and the live balance before the demo.
+See the [DNS setup](docs/dns.md), [evidence](evidence/README.md), and
+[HTTPS proxy notes](docs/proxy.md). The DNS record maps `app.team18.test` to
+Aarohi's Mac. During the 2026-09-29 integration test, both Macs used scoped
+resolvers for the project domain while Wi-Fi DNS stayed automatic. The
+evidence covers DNS and TLS captures, browser headers, balancing, caching,
+and failure tests. Recheck LAN addresses and balancing before the demo.

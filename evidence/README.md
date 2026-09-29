@@ -1,22 +1,23 @@
 # Evidence index
 
-## Current live state, 2026-09-29
+## Integration recheck, 2026-09-29
 
-The latest command results are in `local/live-recheck-2026-09-29.txt`.
+The [live recheck](local/live-recheck-2026-09-29.txt) records DNS, trusted
+HTTPS, direct backend status, A/B balancing, cache revalidation, and failure
+tests involving both Macs, saved on Milind's Mac. The wrong team hostname
+returned `NXDOMAIN`; forced wrong-IP and wrong-port HTTPS requests failed to
+connect. Caddy briefly routed only to B, then passed repeated A/B checks
+after restoration. See the
+[proxy notes](../docs/proxy.md) for that unresolved intermittent route.
 
-DNS on both Macs, trusted HTTPS, both direct backend status endpoints, and
-cache `200`/ETag `304` were rechecked successfully. A wrong team hostname
-returned `NXDOMAIN`; wrong-IP and wrong-port HTTPS requests failed to connect.
-The original Caddy listener was restored after diagnostic tests. An initial
-series of HTTPS requests reached only B, but a later series of 12 alternated
-B/A. See `docs/proxy.md` for the intermittent Caddy routing error. Earlier
-A/B and backend-down captures remain historical evidence.
-
+These are dated observations. Both Macs and their LAN addresses must be
+checked again before the demo.
 
 ## Captured on Milind's Mac
 
 | File | Shows |
 | --- | --- |
+| `local/live-recheck-2026-09-29.txt` | Dated end-to-end and failure recheck, including the intermittent route |
 | `local/root.txt` | Root response and `X-Backend: A` |
 | `local/status.txt` | JSON status and backend header |
 | `local/status-lan.txt` | Backend reachable via this Mac's LAN IP |

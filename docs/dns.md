@@ -1,6 +1,6 @@
 # DNS setup and verification — Milind's Mac
 
-## Current LAN snapshot
+## Recorded LAN snapshot
 
 Captured 2026-09-23 18:56 IST. These DHCP and private Wi-Fi MAC values may change when the network changes.
 
@@ -31,9 +31,9 @@ On 2026-09-29, Aarohi installed the same `/etc/resolver/team18.test` setting whi
 
 Before each demo:
 
-1. Before the demo, recheck both Macs' DHCP addresses against the config file.
-2. If dnsmasq is stopped, start it on Milind's Mac with `sudo /opt/homebrew/bin/brew services start dnsmasq`; enter the administrator password only in the Mac's Terminal. Verify an uncached public name and `app.team18.test` through `dig @10.7.20.246` before changing either Mac's Wi-Fi DNS setting.
-3. Repeat `nslookup app.team18.test 10.7.20.246` from Aarohi's Mac; the 2026-09-29 output is saved in `evidence/local/dns-aarohi-nslookup.txt`. Keep Milind's Wi-Fi DNS automatic. The domain-specific resolver already routes browser requests for `team18.test` to dnsmasq without changing public-name DNS.
+1. Recheck both Macs' DHCP addresses against the config file.
+2. If dnsmasq is stopped, start it on Milind's Mac with `sudo /opt/homebrew/bin/brew services start dnsmasq`; enter the administrator password only in the Mac's Terminal. Run `dig @10.7.20.246 app.team18.test A` and `dig @10.7.20.246 example.com A` to check the project record and public forwarding. Keep both Macs' Wi-Fi DNS settings automatic.
+3. Repeat `nslookup app.team18.test 10.7.20.246` from Aarohi's Mac; the 2026-09-29 output is saved in [the evidence folder](../evidence/local/dns-aarohi-nslookup.txt). The domain-specific resolver routes browser requests for `team18.test` to dnsmasq without changing public-name DNS.
 
 Do not put this hostname in `/etc/hosts`; it would bypass the DNS query this project must demonstrate. Recheck LAN IPs after reconnecting to Wi-Fi.
 
