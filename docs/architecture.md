@@ -76,5 +76,4 @@ out. Her current IP and services still need confirmation. The earlier
 intermittent Caddy route failure and untested reboot behavior are documented
 in [proxy notes](tls-setup.md) and [DNS setup](dns-setup.md).
 
-See [demo commands](demo-commands.md) and the
-[five-minute script](phase1-video-script.md).
+See [demo commands](demo-commands.md). The demo video will be added later.

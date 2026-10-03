@@ -34,5 +34,5 @@ Use [demo commands](demo-commands.md) to produce the required views.
 - [ ] Confirm any additional requirements in the actual submission form.
 
 Publishing, committing, or pushing the prepared work requires Milind's
-approval. See the [video script](phase1-video-script.md) and
-[demo commands](demo-commands.md).
+approval. See [demo commands](demo-commands.md). The completed video will
+be added later.

@@ -141,7 +141,6 @@ See [TLS and proxy setup](docs/tls-setup.md) and the
 │   ├── demo-commands.md
 │   ├── dns-setup.md
 │   ├── form-submission-checklist.md
-│   ├── phase1-video-script.md
 │   └── tls-setup.md
 └── phase1/
     ├── backend/
@@ -211,14 +210,7 @@ included in this repository.
 - Caddy once temporarily routed only to B and logged `no route to host` for A.
   Restarting restored balancing; the cause was not established.
 - dnsmasq was registered with launchd, but startup after reboot was not tested.
-- The five-minute [video script](docs/phase1-video-script.md) allocates
-  **2 minutes 30 seconds each** to Milind and Isha.
+- The five-minute demo video will be added later, with approximately
+  **2 minutes 30 seconds each** for Milind and Isha.
 - Use the [submission checklist](docs/form-submission-checklist.md) to check
   required demonstrations and final sharing access.
-
-## Credentials and attribution
-
-Private keys, passwords, tokens, secret environment files, and private working
-notes are excluded. All configuration describes Team 18's setup.
-Repository organization and README presentation were inspired by
-[mahir-m01/Computer-Network-Project](https://github.com/mahir-m01/Computer-Network-Project).
