@@ -1,10 +1,0 @@
-* Added app.team18.test:8443:10.7.23.42 to DNS cache
-* Hostname app.team18.test was found in DNS cache
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying 10.7.23.42:8443...
-* connect to 10.7.23.42 port 8443 from 10.7.20.246 port 63743 failed: Connection refused
-* Failed to connect to app.team18.test port 8443 after 114 ms: Couldn't connect to server
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-* Closing connection
-curl: (7) Failed to connect to app.team18.test port 8443 after 114 ms: Couldn't connect to server

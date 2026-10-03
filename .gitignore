@@ -1,0 +1,16 @@
+.DS_Store
+node_modules/
+.env
+.env.*
+!.env.example
+!*.env.example
+*-key.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+/brain/
+/recordings/
+/video-output/
+/evidence/

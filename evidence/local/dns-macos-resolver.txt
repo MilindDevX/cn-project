@@ -1,3 +1,0 @@
-name: app.team18.test
-ip_address: 10.7.23.42
-

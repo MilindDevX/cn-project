@@ -1,7 +1,0 @@
-HTTP/1.1 304 Not Modified
-X-Backend: A
-Cache-Control: max-age=60
-ETag: "backend-a-cache-v1"
-Date: Wed, 23 Sep 2026 13:25:51 GMT
-Connection: keep-alive
-Keep-Alive: timeout=5
