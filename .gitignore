@@ -10,7 +10,3 @@ node_modules/
 *.pfx
 id_rsa*
 id_ed25519*
-/brain/
-/recordings/
-/video-output/
-/evidence/
