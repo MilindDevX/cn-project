@@ -3,6 +3,8 @@
 Commands that exercise each part of the service. Run them from the repository
 root on a client Mac with the scoped resolver configured (see
 [DNS setup](dns-setup.md)). The addresses are those in the [README](../README.md#network-addresses).
+The [demo video](https://drive.google.com/file/d/1H4n-LBXF-vVy80cyLX6yYUcOwmu99vel/view)
+shows these checks being run.
 
 ## Local setup and tests
 

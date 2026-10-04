@@ -12,6 +12,12 @@ revalidation and failure handling.
 Both backends are Node.js standard-library HTTP servers, so the application
 needs no npm packages. Caddy provides HTTPS and load balancing.
 
+## Demo video
+
+A walkthrough of the DNS lookup, TLS connection, load balancing, cache
+revalidation and failure handling (about 4½ minutes):
+[Team 18 demo video](https://drive.google.com/file/d/1H4n-LBXF-vVy80cyLX6yYUcOwmu99vel/view).
+
 ## Architecture
 
 ```mermaid
