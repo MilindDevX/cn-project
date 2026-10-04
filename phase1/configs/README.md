@@ -1,28 +1,24 @@
-# Phase 1 configuration
+# Configuration
 
-| File | Owner and deployed location |
-| --- | --- |
-| [dnsmasq-team18.conf](dnsmasq-team18.conf) | Milind; `/opt/homebrew/etc/dnsmasq.d/team18.conf` |
-| [Caddyfile](Caddyfile) | Isha; `~/team18-proxy/Caddyfile` |
+| File | Purpose | Deployed location |
+| --- | --- | --- |
+| [dnsmasq-team18.conf](dnsmasq-team18.conf) | DNS record for `app.team18.test`; forwards other names | `/opt/homebrew/etc/dnsmasq.d/team18.conf` on Milind's Mac |
+| [Caddyfile](Caddyfile) | HTTPS reverse proxy and load balancer | Next to the certificate files on Isha's Mac |
 
-Both files use the recorded DHCP addresses. Before installing an updated copy,
-confirm Milind's and Isha's current IPs and compare against the DNS record and
-Caddy upstream. The certificate paths in Caddy refer to Isha's Mac.
-Repository reorganization does not update either deployed configuration.
+Both files use the addresses in the [README](../../README.md#network-addresses):
+the DNS record points to the proxy, and the Caddy upstreams point to the two
+backends. If a DHCP address changes, update the matching entry here.
 
-Validate the tracked DNS file from the repository root:
+Validate the DNS file from the repository root:
 
 ```sh
 /opt/homebrew/sbin/dnsmasq --test --conf-file=phase1/configs/dnsmasq-team18.conf
 ```
 
-On Isha's Mac, with the deployed certificate files available:
+Validate the Caddy file from the directory that holds the certificate files:
 
 ```sh
-cd ~/team18-proxy
 caddy validate --config Caddyfile --adapter caddyfile
 ```
 
-See [DNS installation and resolver settings](../../docs/dns-setup.md) and
-[Caddy startup and certificate verification](../../docs/tls-setup.md).
-Do not start duplicate services when the existing service already owns its port.
+See [DNS setup](../../docs/dns-setup.md) and [TLS setup](../../docs/tls-setup.md).
