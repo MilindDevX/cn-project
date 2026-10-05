@@ -6,8 +6,8 @@ revalidation and failure handling.
 
 | Member | Responsibilities |
 | --- | --- |
-| Milind | Backend A, dnsmasq (DNS), client verification |
-| Isha | Backend B, Caddy HTTPS reverse proxy, certificates |
+| Milind Bansal | Backend A, dnsmasq (DNS), client verification |
+| Isha Tomar | Backend B, Caddy HTTPS reverse proxy, certificates |
 
 Both backends are Node.js standard-library HTTP servers, so the application
 needs no npm packages. Caddy provides HTTPS and load balancing.
