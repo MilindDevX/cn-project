@@ -4,10 +4,10 @@ A private HTTPS service running across two Macs. A request travels the full
 path: **DNS → TCP → TLS → reverse proxy → Backend A or B**, with cache
 revalidation and failure handling.
 
-| Member | Responsibilities |
-| --- | --- |
-| Milind Bansal | Backend A, dnsmasq (DNS), client verification |
-| Isha Tomar | Backend B, Caddy HTTPS reverse proxy, certificates |
+| Member | Phase 1 | Phase 2 |
+| --- | --- | --- |
+| Milind Bansal | Backend A, dnsmasq (DNS), client verification | TTL and record change, standby edge cutover, Backend A isolation, diagnosis script |
+| Isha Tomar | Backend B, Caddy HTTPS reverse proxy, certificates | Backup DNS server, edge failover, Backend B isolation |
 
 Both backends are Node.js standard-library HTTP servers, so the application
 needs no npm packages. Caddy provides HTTPS and load balancing.
@@ -120,7 +120,8 @@ Phase 2 hardens the same network: a backup DNS server on Isha's Mac, a
 30-second TTL with live record changes, pf rules that let only the edge reach
 the backends, faster failover at the edge, a standby edge for DNS-based
 cutover, and a layer-by-layer diagnosis script. Configs are templates rendered
-for the day's DHCP addresses. See the [Phase 2 guide](docs/phase2.md) and the
+for the day's DHCP addresses. See the [Phase 2 guide](docs/phase2.md), the
+[Phase 2 report](docs/phase2-report.md) with test results, and the
 [troubleshooting guide](docs/troubleshooting.md).
 
 ## Repository structure
@@ -128,10 +129,13 @@ for the day's DHCP addresses. See the [Phase 2 guide](docs/phase2.md) and the
 ```text
 .
 ├── README.md
+├── evidence/
+│   └── phase2/        Raw output of every Phase 2 test
 ├── docs/
 │   ├── architecture.md
 │   ├── dns-setup.md
 │   ├── phase2.md
+│   ├── phase2-report.md
 │   ├── tls-setup.md
 │   ├── troubleshooting.md
 │   └── verification.md

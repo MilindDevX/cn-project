@@ -1,0 +1,40 @@
+# Phase 1: packet capture (tshark on project-only.pcapng, captured on Milind's Mac)
+
+## DNS
+$ tshark -r project-only.pcapng -Y dns -T fields -e frame.number -e frame.time_relative -e ip.src -e ip.dst -e udp.srcport -e udp.dstport -e _ws.col.Info | head -6
+1	0.000000000	10.7.20.246	8.8.8.8	49680	53	Standard query 0x5cfc A example.com OPT
+2	0.017588000	8.8.8.8	10.7.20.246	53	49680	Standard query response 0x5cfc A example.com A 104.20.23.154 A 172.66.147.243 OPT
+3	-0.056205000	10.7.20.246	10.7.20.246	52426	53	Standard query 0x5492 A app.team18.test OPT
+4	-0.009000000	10.7.20.246	10.7.20.246	53	52426	Standard query response 0x5492 A app.team18.test A 10.7.16.207 OPT
+5	-0.001634000	10.7.20.246	10.7.20.246	63554	53	Standard query 0x107f A example.com OPT
+6	0.018034000	10.7.20.246	10.7.20.246	53	63554	Standard query response 0x107f A example.com A 104.20.23.154 A 172.66.147.243 OPT
+
+## TCP three-way handshake
+$ tshark -r project-only.pcapng -Y 'tcp.stream==0 && frame.number<=11' -T fields -e frame.number -e ip.src -e tcp.srcport -e ip.dst -e tcp.dstport -e tcp.flags.str -e tcp.seq -e tcp.ack
+9	10.7.20.246	59844	10.7.16.207	443	····CE····S·	0	0
+10	10.7.16.207	443	10.7.20.246	59844	·····E·A··S·	0	1
+11	10.7.20.246	59844	10.7.16.207	443	·······A····	1	1
+
+## TLS handshake
+$ tshark -r project-only.pcapng -Y 'tcp.stream==0 && tls && frame.number<=29' -T fields -e frame.number -e ip.src -e ip.dst -e _ws.col.Protocol -e _ws.col.Info
+12	10.7.20.246	10.7.16.207	TLSv1	Client Hello (SNI=app.team18.test)
+17	10.7.16.207	10.7.20.246	TLSv1.3	Server Hello, Change Cipher Spec, Application Data, Application Data
+18	10.7.16.207	10.7.20.246	TLSv1.3	Application Data, Application Data
+22	10.7.20.246	10.7.16.207	TLSv1.3	Change Cipher Spec
+23	10.7.20.246	10.7.16.207	TLSv1.3	Application Data
+24	10.7.20.246	10.7.16.207	TLSv1.3	Application Data
+25	10.7.20.246	10.7.16.207	TLSv1.3	Application Data
+27	10.7.16.207	10.7.20.246	TLSv1.3	Application Data
+28	10.7.16.207	10.7.20.246	TLSv1.3	Application Data
+29	10.7.16.207	10.7.20.246	TLSv1.3	Application Data
+
+## Cipher suites offered in the ClientHello and chosen in the ServerHello
+$ tshark -r project-only.pcapng -Y 'tls.handshake.type==1' -T fields -e tls.handshake.ciphersuite | head -1 | tr ',' '\n' | head -6
+0x1303
+0x1302
+0x1301
+0xcca9
+0xcca8
+0xccaa
+$ tshark -r project-only.pcapng -Y 'tls.handshake.type==2' -T fields -e tls.handshake.ciphersuite | head -1
+0x1303

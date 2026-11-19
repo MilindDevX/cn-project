@@ -1,0 +1,40 @@
+## Extension C: backend isolation with pf (2026-11-19 15:56:30)
+--- rule file loaded on Isha's Mac into anchor com.apple/team18
+pass in quick on lo0 all
+block drop in quick proto tcp from any to any port 3002
+--- rule file loaded on Milind's Mac into anchor com.apple/team18
+pass in quick on lo0 all
+pass in quick proto tcp from 10.7.3.96 to any port 3001
+block drop in quick proto tcp from any to any port 3001
+$ curl --max-time 5 http://10.7.3.96:3002/api/status   # from Milind's Mac (a client)
+HTTP 000
+curl exit 28 (28 = timed out: packets dropped)
+$ curl --max-time 5 http://10.7.31.154:3001/api/status   # from Isha's Mac (the edge)
+HTTP 200
+$ curl http://127.0.0.1:3002/api/status   # on Isha's Mac, the path Caddy uses
+{"status":"ok","backend":"B"}
+$ through the edge: https://app.team18.test/api/status
+HTTP/2 200  x-backend: A x-edge: primary
+HTTP/2 200  x-backend: B x-edge: primary
+HTTP/2 200  x-backend: A x-edge: primary
+HTTP/2 200  x-backend: B x-edge: primary
+
+--- live rules on Milind's Mac before rollback ($ sudo pfctl -a com.apple/team18 -vsr)
+pass in quick on lo0 all flags S/SA keep state
+  [ Evaluations: 13314     Packets: 1156      Bytes: 141483      States: 185   ]
+pass in quick inet proto tcp from 10.7.3.96 to any port = 3001 flags S/SA keep state
+  [ Evaluations: 12421     Packets: 364       Bytes: 42117       States: 2     ]
+block drop in quick proto tcp from any to any port = 3001
+  [ Evaluations: 5657      Packets: 70        Bytes: 5995        States: 0     ]
+
+--- rollback on Milind's Mac
+$ sudo pfctl -a com.apple/team18 -F all   -> rules cleared
+$ sudo pfctl -X 1940827142303788248       -> pf disabled
+$ sudo pfctl -a com.apple/team18 -sr      -> (no rules)
+
+--- third-device check while the rules were on
+Phone on the same Wi-Fi, browser at http://10.7.31.154:3001/api/status -> "took too long to respond" (packets dropped; the block rule's counter above shows 70 dropped packets)
+
+--- after Isha's rollback (16:00:25)
+$ curl http://10.7.3.96:3002/api/status   # from Milind's Mac
+HTTP 200  (direct access restored; original configuration back on both Macs)

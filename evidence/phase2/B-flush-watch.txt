@@ -1,0 +1,14 @@
+## Extension B: record switched back, cache still old, then flushed by hand
+time      cache (OS)     server 10.7.31.154 (TTL) edge      step
+15:53:54  10.7.31.154    10.7.31.154 (30s)        standby   record -> standby (10.7.31.154)
+15:54:26  10.7.31.154    10.7.31.154 (30s)        standby   after one TTL: client on standby
+15:54:26  10.7.31.154    10.7.3.96 (30s)          standby   record -> primary (10.7.3.96)
+15:54:27  10.7.31.154    10.7.3.96 (30s)          standby   cache still holds the old answer
+15:54:28  10.7.31.154    10.7.3.96 (30s)          standby   cache still holds the old answer
+15:54:29  10.7.31.154    10.7.3.96 (30s)          standby   cache still holds the old answer
+15:54:30  10.7.31.154    10.7.3.96 (30s)          standby   cache still holds the old answer
+15:54:31  10.7.31.154    10.7.3.96 (30s)          standby   cache still holds the old answer
+15:54:32  10.7.3.96      10.7.3.96 (30s)          primary   cache flushed by hand
+15:54:33  10.7.3.96      10.7.3.96 (30s)          primary   
+15:54:34  10.7.3.96      10.7.3.96 (30s)          primary   
+15:54:35  10.7.3.96      10.7.3.96 (30s)          primary   

@@ -1,0 +1,94 @@
+# Phase 1: failure demonstration, wrong DNS server on the client
+
+## Before: the client asks the project DNS server
+$ dig @10.7.20.246 app.team18.test
+
+; <<>> DiG 9.10.6 <<>> @10.7.20.246 app.team18.test
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 28049
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;app.team18.test.		IN	A
+
+;; ANSWER SECTION:
+app.team18.test.	0	IN	A	10.7.16.207
+
+;; Query time: 2 msec
+;; SERVER: 10.7.20.246#53(10.7.20.246)
+;; WHEN: Sun Oct 04 22:17:18 IST 2026
+;; MSG SIZE  rcvd: 60
+
+
+$ ping -c 4 10.7.16.207
+PING 10.7.16.207 (10.7.16.207): 56 data bytes
+64 bytes from 10.7.16.207: icmp_seq=0 ttl=64 time=16.038 ms
+64 bytes from 10.7.16.207: icmp_seq=1 ttl=64 time=26.445 ms
+64 bytes from 10.7.16.207: icmp_seq=2 ttl=64 time=79.568 ms
+64 bytes from 10.7.16.207: icmp_seq=3 ttl=64 time=93.409 ms
+
+--- 10.7.16.207 ping statistics ---
+4 packets transmitted, 4 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 16.038/53.865/93.409/33.193 ms
+
+## Failure: the client asks 8.8.8.8 instead
+$ dig @8.8.8.8 app.team18.test
+
+; <<>> DiG 9.10.6 <<>> @8.8.8.8 app.team18.test
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 27717
+;; flags: qr rd ra ad; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; QUESTION SECTION:
+;app.team18.test.		IN	A
+
+;; AUTHORITY SECTION:
+.			86273	IN	SOA	a.root-servers.net. nstld.verisign-grs.com. 2026100400 1800 900 604800 86400
+
+;; Query time: 14 msec
+;; SERVER: 8.8.8.8#53(8.8.8.8)
+;; WHEN: Sun Oct 04 22:17:21 IST 2026
+;; MSG SIZE  rcvd: 119
+
+
+$ ping -c 4 10.7.16.207
+PING 10.7.16.207 (10.7.16.207): 56 data bytes
+64 bytes from 10.7.16.207: icmp_seq=0 ttl=64 time=29.724 ms
+64 bytes from 10.7.16.207: icmp_seq=1 ttl=64 time=57.551 ms
+64 bytes from 10.7.16.207: icmp_seq=2 ttl=64 time=62.860 ms
+64 bytes from 10.7.16.207: icmp_seq=3 ttl=64 time=92.337 ms
+
+--- 10.7.16.207 ping statistics ---
+4 packets transmitted, 4 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 29.724/60.618/92.337/22.220 ms
+
+## Restored
+$ dig @10.7.20.246 app.team18.test
+
+; <<>> DiG 9.10.6 <<>> @10.7.20.246 app.team18.test
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 60350
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;app.team18.test.		IN	A
+
+;; ANSWER SECTION:
+app.team18.test.	0	IN	A	10.7.16.207
+
+;; Query time: 65 msec
+;; SERVER: 10.7.20.246#53(10.7.20.246)
+;; WHEN: Sun Oct 04 22:17:24 IST 2026
+;; MSG SIZE  rcvd: 60
