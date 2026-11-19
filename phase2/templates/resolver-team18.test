@@ -1,0 +1,3 @@
+nameserver {{MILIND_IP}}
+nameserver {{ISHA_IP}}
+timeout 2

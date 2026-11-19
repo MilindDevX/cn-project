@@ -114,6 +114,15 @@ robin, checks `/api/status` every two seconds, and retries failed upstream
 connections for up to two seconds. Clients verify the certificate normally,
 without bypassing verification. See [TLS and proxy setup](docs/tls-setup.md).
 
+## Phase 2
+
+Phase 2 hardens the same network: a backup DNS server on Isha's Mac, a
+30-second TTL with live record changes, pf rules that let only the edge reach
+the backends, faster failover at the edge, a standby edge for DNS-based
+cutover, and a layer-by-layer diagnosis script. Configs are templates rendered
+for the day's DHCP addresses. See the [Phase 2 guide](docs/phase2.md) and the
+[troubleshooting guide](docs/troubleshooting.md).
+
 ## Repository structure
 
 ```text
@@ -122,21 +131,36 @@ without bypassing verification. See [TLS and proxy setup](docs/tls-setup.md).
 ├── docs/
 │   ├── architecture.md
 │   ├── dns-setup.md
+│   ├── phase2.md
 │   ├── tls-setup.md
+│   ├── troubleshooting.md
 │   └── verification.md
-└── phase1/
-    ├── backend/
-    │   ├── README.md
-    │   ├── backend-a.js
-    │   ├── backend-a.test.js
-    │   ├── backend-b.js
-    │   └── backend-b.test.js
-    ├── configs/
-    │   ├── README.md
-    │   ├── Caddyfile
-    │   └── dnsmasq-team18.conf
-    └── tls/
-        └── README.md
+├── phase1/
+│   ├── backend/
+│   │   ├── README.md
+│   │   ├── backend-a.js
+│   │   ├── backend-a.test.js
+│   │   ├── backend-b.js
+│   │   └── backend-b.test.js
+│   ├── configs/
+│   │   ├── README.md
+│   │   ├── Caddyfile
+│   │   └── dnsmasq-team18.conf
+│   └── tls/
+│       └── README.md
+└── phase2/
+    ├── scripts/
+    │   ├── diagnose.sh
+    │   └── render.sh
+    └── templates/
+        ├── Caddyfile
+        ├── Caddyfile.standby
+        ├── backend-a.pf
+        ├── backend-b.pf
+        ├── dnsmasq-backup.conf
+        ├── dnsmasq-primary.conf
+        ├── resolver-team18.test
+        └── team18.hosts
 ```
 
 ## Expected behavior

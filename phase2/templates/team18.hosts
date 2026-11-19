@@ -1,0 +1,3 @@
+# The project record, read by dnsmasq through addn-hosts.
+# Edit this line and send dnsmasq SIGHUP to change the record without a restart.
+{{EDGE_IP}} app.team18.test

@@ -1,0 +1,5 @@
+# Backend A isolation (Milind's Mac): only the edge may reach port 3001.
+# Loaded into the anchor com.apple/team18; /etc/pf.conf is never edited.
+pass in quick on lo0 all
+pass in quick proto tcp from {{ISHA_IP}} to any port 3001
+block drop in quick proto tcp from any to any port 3001

@@ -1,0 +1,16 @@
+# Standby edge (Milind's Mac), used for the DNS-based cutover (Extension E).
+# Same site and policy as the primary edge; only the backend addresses differ.
+app.team18.test {
+	tls app.team18.test.pem app.team18.test-key.pem
+	header X-Edge standby
+	reverse_proxy 127.0.0.1:3001 {{ISHA_IP}}:3002 {
+		lb_policy round_robin
+		lb_try_duration 2s
+		health_uri /api/status
+		health_interval 2s
+		health_timeout 1s
+		fail_duration 10s
+		max_fails 1
+		unhealthy_status 5xx
+	}
+}
