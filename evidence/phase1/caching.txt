@@ -12,3 +12,44 @@ x-backend: A
 content-length: 30
 
 Cached response from Backend A
+
+# Cache revalidation, 19 Nov 2026 (the x-edge header was added in Phase 2)
+# The ETag from Backend A gives 304 on A and 200 on B, because each backend has its own ETag.
+
+$ curl -si https://app.team18.test/api/cache
+HTTP/2 200
+alt-svc: h3=":443"; ma=2592000
+cache-control: max-age=60
+content-type: text/plain; charset=utf-8
+date: Thu, 19 Nov 2026 13:20:08 GMT
+etag: "backend-a-cache-v1"
+via: 1.1 Caddy
+x-backend: A
+x-edge: primary
+content-length: 30
+
+Cached response from Backend A
+
+$ curl -si -H 'If-None-Match: "backend-a-cache-v1"' https://app.team18.test/api/cache   # round robin sends it to B
+HTTP/2 200
+alt-svc: h3=":443"; ma=2592000
+cache-control: max-age=60
+content-type: text/plain; charset=utf-8
+date: Thu, 19 Nov 2026 13:20:08 GMT
+etag: "backend-b-cache-v1"
+via: 1.1 Caddy
+x-backend: B
+x-edge: primary
+content-length: 30
+
+Cached response from Backend B
+
+$ curl -si -H 'If-None-Match: "backend-a-cache-v1"' https://app.team18.test/api/cache   # next request goes to A
+HTTP/2 304
+alt-svc: h3=":443"; ma=2592000
+cache-control: max-age=60
+date: Thu, 19 Nov 2026 13:20:08 GMT
+etag: "backend-a-cache-v1"
+via: 1.1 Caddy
+x-backend: A
+x-edge: primary
