@@ -1,0 +1,13 @@
+## Extension A: primary DNS stopped (2026-11-19 15:20:56)
+$ sudo brew services stop dnsmasq   # on Milind's Mac (10.7.31.154)
+$ dig @10.7.31.154 app.team18.test A +time=2 +tries=1
+;; connection timed out; no servers could be reached
+$ dig @10.7.3.96 app.team18.test A +noall +answer
+app.team18.test.	30	IN	A	10.7.3.96
+$ dscacheutil -q host -a name app.team18.test   # system resolver, after the 30 s TTL expired
+name: app.team18.test
+ip_address: 10.7.3.96
+$ curl -s -D - -o /dev/null https://app.team18.test/api/status
+HTTP/2 200 
+x-backend: B
+x-edge: primary

@@ -1,0 +1,14 @@
+16:04:17 live rules:
+pass in quick on lo0 all flags S/SA keep state
+  [ Evaluations: 1671      Packets: 28        Bytes: 10690       States: 4     ]
+  [ Inserted: uid 0 pid 29106 ]
+block drop in quick proto tcp from any to any port = 3002
+  [ Evaluations: 1643      Packets: 88        Bytes: 7198        States: 0     ]
+  [ Inserted: uid 0 pid 29106 ]
+rules cleared
+nat cleared
+dummynet cleared
+0 tables deleted.
+pf disabled
+16:04:17 after rollback:
+(no rules listed = restored)

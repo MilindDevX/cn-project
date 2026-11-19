@@ -20,6 +20,22 @@ primary edge, Backend B). The raw output of every test is in
 
 ## Results
 
+### A. Backup DNS resolver
+
+Both servers returned `app.team18.test 30 IN A 10.7.3.96`, and each client's
+resolver listed `10.7.31.154` first and `10.7.3.96` second
+([before](../evidence/phase2/A-before.txt)). With dnsmasq stopped on Milind's
+Mac ([log](../evidence/phase2/A-primary-stopped.txt)):
+
+- `dig @10.7.31.154` timed out: no servers could be reached.
+- `dig @10.7.3.96` still answered `10.7.3.96`.
+- After the 30-second TTL expired, the system resolver still returned
+  `10.7.3.96`, answered by the backup.
+- `https://app.team18.test/api/status` returned `200` from Backend B.
+
+After the primary restarted, it answered again
+([log](../evidence/phase2/A-after.txt)).
+
 ### B. TTL and controlled record change
 
 Every answer carried `TTL 30`. The record was changed from the primary edge
@@ -51,6 +67,39 @@ With the rule loaded on Milind's Mac ([log](../evidence/phase2/C-isolation.txt))
 - After the rollback (`pfctl -a com.apple/team18 -F all`, then `pfctl -X` with
   the enable token), the anchor listed no rules and pf returned to disabled.
 
+### C. Service isolation (Backend B side)
+
+With the rule loaded on Isha's Mac, Milind's Mac probed port 3002 every few
+seconds ([probe log](../evidence/phase2/C-isha-probe.txt),
+[live rules](../evidence/phase2/C-isha-live-rules.txt)):
+
+- Before the rule, and again after the rollback, every probe returned `200`.
+- While the rule was on (16:03:55 to 16:04:16), every probe timed out.
+- In the first run with both rules on, Caddy still reached Backend B at
+  `127.0.0.1:3002` over loopback, and requests through the edge returned both
+  `x-backend: A` and `B` ([log](../evidence/phase2/C-isolation.txt)).
+- The block rule counted 88 dropped packets. After the rollback the anchor
+  listed no rules and pf returned to disabled.
+
+### D. High-availability failover
+
+Through the primary edge ([log](../evidence/phase2/D-failover.txt)):
+
+| State | Six requests |
+| --- | --- |
+| Both backends running | A, B, A, B, A, B, all `200` |
+| Backend A stopped (direct connection refused) | B six times, all `200`, sent immediately |
+| Backend A restarted | A, B, A, B, A, B, all `200` |
+
+No request failed when A stopped: the failed attempt marked A down (passive
+check) and `lb_try_duration` retried on B. When both backends were stopped in
+an earlier local test, Caddy returned `503`.
+
+The edge on Isha's Mac is still a single point of failure. If Caddy or that Mac
+stops, nothing serves `app.team18.test`. Removing it needs two edges sharing
+one address (a floating IP with VRRP, for example keepalived), or DNS that
+returns several edges and stops returning a failed one.
+
 ### E. Controlled edge migration
 
 The cutover in Extension B moved traffic from the primary edge to the standby
@@ -72,6 +121,13 @@ backends.
 
 ## Learning summary
 
+**A. Backup DNS.** A DNS failure and an application failure look different
+from the client. When DNS fails, the name does not resolve and no connection
+is even attempted, although every server may be healthy. When the application
+fails, the name resolves and TCP may connect, but the service returns an error
+or refuses the connection. A second resolver removes DNS as a single point of
+failure; the client tries the next listed server after a timeout.
+
 **B. TTL and record change.** The TTL is how long a resolver may reuse an
 answer without asking again. The server changed at once, but the client
 followed only when its cached answer expired, about 30 seconds later. This is
@@ -86,6 +142,16 @@ that the stock `/etc/pf.conf` already evaluates, which makes the rollback
 exact: flush the anchor and release the enable token. Dropping packets rather
 than refusing them hides whether a service exists, and the resulting timeout
 is itself a clue when diagnosing a fault.
+**C. Isolation on the edge's own Mac.** Backend B shares a Mac with the edge,
+so it needs no LAN access at all: allowing loopback and dropping everything
+else on port 3002 is enough, and it shows that the edge is the only way in.
+
+**D. Failover.** Active health checks find a dead backend within one interval;
+passive checks react to the first failed request; retries hide the failure from
+the client. Together they removed every client-visible error when Backend A
+stopped. Redundant backends do not make the service highly available while the
+edge itself has no backup.
+
 
 **E. Edge migration.** DNS moves traffic gradually, not at a single instant,
 because each client switches when its own cached answer expires. Both edges

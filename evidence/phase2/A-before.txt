@@ -1,0 +1,14 @@
+## Extension A: before: both DNS servers healthy (2026-11-19 15:19:51)
+$ dig @10.7.31.154 app.team18.test A +noall +answer
+app.team18.test.	30	IN	A	10.7.3.96
+$ dig @10.7.3.96 app.team18.test A +noall +answer
+app.team18.test.	30	IN	A	10.7.3.96
+$ scutil --dns (team18.test resolver)
+  domain   : team18.test
+  nameserver[0] : 10.7.31.154
+  nameserver[1] : 10.7.3.96
+  timeout  : 2
+$ curl -s -D - -o /dev/null https://app.team18.test/api/status
+HTTP/2 200 
+x-backend: A
+x-edge: primary

@@ -1,0 +1,4 @@
+## Extension A: primary DNS restarted (2026-11-19 15:22:41)
+$ sudo brew services start dnsmasq   # on Milind's Mac
+$ dig @10.7.31.154 app.team18.test A +noall +answer
+app.team18.test.	30	IN	A	10.7.3.96

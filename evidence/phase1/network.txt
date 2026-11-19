@@ -1,0 +1,37 @@
+# Phase 1: network addresses and reachability (4 October 2026)
+
+## Milind's Mac (DNS server, Backend A)
+$ ifconfig en0 | grep 'inet '
+	inet 10.7.20.246 netmask 0xffffe000 broadcast 10.7.31.255
+$ route -n get default | grep -E 'interface|gateway'
+    gateway: 10.7.0.1
+  interface: en0
+
+## Isha's Mac (edge proxy, Backend B)
+$ ifconfig en0 | grep 'inet'
+	inet6 fe80::406:b6a0:c53d:34ef%en0 prefixlen 64 secured scopeid 0xb
+	inet 10.7.16.207 netmask 0xffffe000 broadcast 10.7.31.255
+
+## Milind's Mac to Isha's Mac
+$ ping -c 4 10.7.16.207
+PING 10.7.16.207 (10.7.16.207): 56 data bytes
+64 bytes from 10.7.16.207: icmp_seq=0 ttl=64 time=15.550 ms
+64 bytes from 10.7.16.207: icmp_seq=1 ttl=64 time=11.145 ms
+64 bytes from 10.7.16.207: icmp_seq=2 ttl=64 time=28.504 ms
+64 bytes from 10.7.16.207: icmp_seq=3 ttl=64 time=10.368 ms
+
+--- 10.7.16.207 ping statistics ---
+4 packets transmitted, 4 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 10.368/16.392/28.504/7.267 ms
+
+## Isha's Mac to Milind's Mac
+$ ping -c 4 10.7.20.246
+PING 10.7.20.246 (10.7.20.246): 56 data bytes
+64 bytes from 10.7.20.246: icmp_seq=0 ttl=64 time=42.944 ms
+64 bytes from 10.7.20.246: icmp_seq=1 ttl=64 time=111.689 ms
+64 bytes from 10.7.20.246: icmp_seq=2 ttl=64 time=33.617 ms
+64 bytes from 10.7.20.246: icmp_seq=3 ttl=64 time=15.231 ms
+
+--- 10.7.20.246 ping statistics ---
+4 packets transmitted, 4 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 15.231/50.870/111.689/36.502 ms
