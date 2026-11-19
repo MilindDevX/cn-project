@@ -20,7 +20,7 @@ done
 tmp=$(mktemp)
 dscacheutil -q host -a name "$name" > "$tmp" 2>/dev/null & pid=$!
 ( sleep 5; kill "$pid" 2>/dev/null ) & watcher=$!
-wait "$pid" 2>/dev/null; kill "$watcher" 2>/dev/null
+wait "$pid" 2>/dev/null; { kill "$watcher"; wait "$watcher"; } 2>/dev/null
 system=$(awk '/ip_address/ {print $2; exit}' "$tmp"); rm -f "$tmp"
 if [ -n "$system" ]; then ok "system resolver (with its cache) -> $system"; else bad "system resolver has no answer; check /etc/resolver/team18.test"; fi
 edge=${system:-$isha}
@@ -29,7 +29,8 @@ echo "2. IP reachability to the edge ($edge)"
 if ping -c 1 -t 2 "$edge" >/dev/null 2>&1; then ok "ping $edge"; else bad "no ping reply from $edge (host down, wrong address, or ICMP blocked)"; fi
 
 echo "3. TCP"
-if nc -z -G 3 "$edge" 443 2>/dev/null; then ok "TCP connect $edge:443"; else bad "TCP connect $edge:443 failed (edge not listening, or blocked)"; fi
+edge_tcp=no
+if nc -z -G 3 "$edge" 443 2>/dev/null; then ok "TCP connect $edge:443"; edge_tcp=yes; else bad "TCP connect $edge:443 failed (edge not listening, or blocked)"; fi
 for backend in "$milind:3001" "$isha:3002"; do
   if nc -z -G 3 "${backend%:*}" "${backend#*:}" 2>/dev/null; then
     ok "TCP connect $backend (direct; refused or timing out is expected while backend firewall rules are on)"
@@ -39,11 +40,15 @@ for backend in "$milind:3001" "$isha:3002"; do
 done
 
 echo "4. TLS"
+if [ "$edge_tcp" = no ]; then
+  bad "skipped: no TCP connection to $edge:443"
+else
 tls=$(echo | openssl s_client -connect "$edge:443" -servername "$name" -verify_return_error 2>&1)
 if echo "$tls" | grep -q 'Verify return code: 0'; then
   ok "certificate for $name verified ($(echo "$tls" | awk -F': ' '/^ *Protocol/ {print $2; exit}'))"
 else
   bad "TLS failed: $(echo "$tls" | grep -m1 -iE 'verify error|errno|refused|alert' || echo 'see openssl s_client output')"
+fi
 fi
 
 echo "5. HTTP"

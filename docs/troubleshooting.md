@@ -25,6 +25,7 @@ phase2/scripts/diagnose.sh MILIND_IP ISHA_IP
 | `dig @server` is right, but the browser goes elsewhere | DNS | Client cache holding an old answer; wait one TTL or flush it |
 | `Connection refused` on 443 | TCP | Caddy stopped, or listening on another port |
 | Connection to 443 times out | TCP/IP | Wrong address, host down, or a firewall dropping packets |
+| Ping answers, slowly, but every port times out | IP/TCP | The Mac is asleep (macOS can answer ping while sleeping) or a firewall drops all TCP |
 | `certificate verify failed` | TLS | Name mismatch, expired certificate, untrusted authority |
 | `502 Bad Gateway` | Application | Edge reached a backend address that refuses or errors |
 | `503 Service Unavailable` | Application | Health checks have marked every backend down |
