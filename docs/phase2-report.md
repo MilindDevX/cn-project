@@ -142,6 +142,7 @@ that the stock `/etc/pf.conf` already evaluates, which makes the rollback
 exact: flush the anchor and release the enable token. Dropping packets rather
 than refusing them hides whether a service exists, and the resulting timeout
 is itself a clue when diagnosing a fault.
+
 **C. Isolation on the edge's own Mac.** Backend B shares a Mac with the edge,
 so it needs no LAN access at all: allowing loopback and dropping everything
 else on port 3002 is enough, and it shows that the edge is the only way in.
@@ -151,7 +152,6 @@ passive checks react to the first failed request; retries hide the failure from
 the client. Together they removed every client-visible error when Backend A
 stopped. Redundant backends do not make the service highly available while the
 edge itself has no backup.
-
 
 **E. Edge migration.** DNS moves traffic gradually, not at a single instant,
 because each client switches when its own cached answer expires. Both edges

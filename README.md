@@ -130,6 +130,7 @@ for the day's DHCP addresses. See the [Phase 2 guide](docs/phase2.md), the
 .
 ├── README.md
 ├── evidence/
+│   ├── phase1/        Command output for each Phase 1 check
 │   └── phase2/        Raw output of every Phase 2 test
 ├── docs/
 │   ├── architecture.md
