@@ -1,0 +1,4 @@
+# Backend B isolation (Isha's Mac): Caddy reaches port 3002 over loopback only.
+# Loaded into the anchor com.apple/team18; /etc/pf.conf is never edited.
+pass in quick on lo0 all
+block drop in quick proto tcp from any to any port 3002

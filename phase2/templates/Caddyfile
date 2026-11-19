@@ -1,0 +1,19 @@
+# Primary edge (Isha's Mac).
+app.team18.test {
+	tls app.team18.test.pem app.team18.test-key.pem
+	header X-Edge primary
+	reverse_proxy {{MILIND_IP}}:3001 127.0.0.1:3002 {
+		lb_policy round_robin
+		lb_try_duration 2s
+
+		# Active checks: probe each backend every 2 s.
+		health_uri /api/status
+		health_interval 2s
+		health_timeout 1s
+
+		# Passive checks: a failed request marks the backend down for 10 s.
+		fail_duration 10s
+		max_fails 1
+		unhealthy_status 5xx
+	}
+}
